@@ -20,24 +20,27 @@ export function getModelName(): string {
 }
 
 export function buildPrompt(question: string): string {
-  return `You are an expert math tutor helping a school or early college student. Solve the following problem with clear, detailed explanations.
+  return `You are a friendly and expert tutor helping school and college students with ANY subject — Maths, Physics, Chemistry, Biology, History, Geography, English, Computer Science, Economics, and more.
 
 Your response MUST follow this EXACT format:
 
-CONCEPT: [The mathematical concept used]
+CONCEPT: [The subject and topic name, e.g. "Biology - Photosynthesis" or "History - World War II"]
 
 STEPS:
-Step 1: [First step]
-Step 2: [Second step]
+Step 1: [First point with clear explanation]
+Step 2: [Second point with clear explanation]
 Step 3: [Continue as needed]
 
-FINAL ANSWER: [The complete final answer]
+FINAL ANSWER: [A clear, complete summary answer]
 
 Rules:
-- Use simple language for students
-- Show ALL calculations
-- Explain WHY each step is done
-- Be encouraging and clear
+- Use very simple, easy language that a school student can understand
+- Break down complex topics into small easy steps
+- Give real-life examples where helpful
+- Be encouraging and friendly
+- For maths: show all calculations step by step
+- For theory subjects: explain clearly with key points
+- Keep it student-friendly and easy to remember
 
 Question: ${question}`;
 }
@@ -47,48 +50,46 @@ export function parseAIResponse(rawText: string): SolveResponse {
   let finalAnswer = "";
   let concept = "";
 
-  // ✅ Extract concept
+  // Extract concept
   const conceptMatch = rawText.match(/CONCEPT:\s*(.+?)(?:\n|$)/i);
   if (conceptMatch) {
     concept = conceptMatch[1].trim();
   }
 
-  // ✅ Extract final answer (FIXED)
-  const finalAnswerMatch = rawText.match(/FINAL ANSWER:\s*([\s\S]+)/i);
-  if (finalAnswerMatch) {
-    finalAnswer = finalAnswerMatch[1].trim();
+  // Extract final answer using index slicing (no s flag needed)
+  const finalAnswerIndex = rawText.search(/FINAL ANSWER:/i);
+  if (finalAnswerIndex !== -1) {
+    finalAnswer = rawText
+      .slice(finalAnswerIndex)
+      .replace(/FINAL ANSWER:\s*/i, "")
+      .trim();
   }
 
-  // ✅ Extract steps
+  // Extract steps section
   const stepsIndex = rawText.search(/STEPS:/i);
-  const finalAnswerIndex = rawText.search(/FINAL ANSWER:/i);
   const endIndex = finalAnswerIndex !== -1 ? finalAnswerIndex : rawText.length;
 
   if (stepsIndex !== -1) {
     const stepsText = rawText.slice(stepsIndex, endIndex);
-
     const stepRegex = /Step\s+\d+:\s*([\s\S]+?)(?=Step\s+\d+:|$)/gi;
     let match;
-
     while ((match = stepRegex.exec(stepsText)) !== null) {
       const stepContent = match[1].trim();
       if (stepContent) steps.push(stepContent);
     }
   }
 
-  // ✅ Fallback if no structured steps
+  // Fallback if no steps found
   if (steps.length === 0 && rawText.trim()) {
     steps.push(rawText.trim());
   }
 
-  // ✅ Fallback if no final answer
   if (!finalAnswer) {
     const lines = rawText.split("\n").filter((l) => l.trim());
     finalAnswer = lines[lines.length - 1] || "See explanation above.";
   }
 
-  // ✅ Default concept
-  if (!concept) concept = "Mathematics";
+  if (!concept) concept = "General";
 
   return { steps, finalAnswer, concept, rawText };
 }

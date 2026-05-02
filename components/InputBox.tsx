@@ -8,12 +8,14 @@ interface InputBoxProps {
 }
 
 const EXAMPLE_QUESTIONS = [
+  "What is photosynthesis and how does it work?",
   "Solve: 2x² + 5x - 3 = 0",
-  "Find the derivative of f(x) = 3x³ - 2x + 7",
-  "If a triangle has sides 3, 4, and 5 cm, find its area",
-  "Simplify: (x² - 9) / (x - 3)",
-  "A train travels 120 km in 2 hours. Find its speed.",
-  "Find the sum of first 20 natural numbers",
+  "Why did World War II happen? Explain simply",
+  "What is Newton's second law of motion?",
+  "Explain the difference between mitosis and meiosis",
+  "What is the French Revolution?",
+  "How does the human digestive system work?",
+  "What is a metaphor? Give examples",
 ];
 
 export default function InputBox({ onSolve, isLoading }: InputBoxProps) {
@@ -22,7 +24,6 @@ export default function InputBox({ onSolve, isLoading }: InputBoxProps) {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Cycle placeholder questions
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % EXAMPLE_QUESTIONS.length);
@@ -67,12 +68,9 @@ export default function InputBox({ onSolve, isLoading }: InputBoxProps) {
 
   return (
     <div className="w-full animate-fade-up">
-      {/* Main input card */}
       <div className="relative rounded-2xl border border-amber-400/20 bg-ink-900 amber-glow overflow-hidden">
-        {/* Top accent line */}
         <div className="h-px bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
 
-        {/* Textarea */}
         <div className="relative">
           <textarea
             ref={textareaRef}
@@ -84,81 +82,45 @@ export default function InputBox({ onSolve, isLoading }: InputBoxProps) {
             rows={4}
             className="w-full bg-transparent px-6 py-5 text-slate-200 placeholder-slate-600 font-body text-base leading-relaxed resize-none outline-none transition-all duration-200 disabled:opacity-60"
           />
-
-          {/* Clear button */}
           {question && !isLoading && (
             <button
               onClick={handleClear}
-              className="absolute top-4 right-4 w-7 h-7 rounded-full bg-ink-700 border border-ink-600 flex items-center justify-center text-slate-500 hover:text-slate-300 hover:border-slate-500 transition-all duration-150"
-              aria-label="Clear input"
+              className="absolute top-4 right-4 w-7 h-7 rounded-full bg-ink-700 border border-ink-600 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-all duration-150"
             >
               <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </button>
           )}
         </div>
 
-        {/* Bottom bar */}
         <div className="flex items-center justify-between px-6 py-3 border-t border-ink-700">
-          {/* Char count */}
-          <span
-            className={`text-xs font-mono transition-colors ${
-              isOverLimit ? "text-red-400" : "text-slate-600"
-            }`}
-          >
+          <span className={`text-xs font-mono transition-colors ${isOverLimit ? "text-red-400" : "text-slate-600"}`}>
             {charCount > 0 ? `${charCount}/2000` : ""}
           </span>
-
           <div className="flex items-center gap-3">
-            {/* Keyboard hint */}
-            <span className="text-xs text-slate-700 hidden sm:block">
-              Ctrl+Enter to solve
-            </span>
-
-            {/* Solve button */}
+            <span className="text-xs text-slate-700 hidden sm:block">Ctrl+Enter to solve</span>
             <button
               onClick={handleSubmit}
               disabled={!question.trim() || isLoading || isOverLimit}
               className="relative flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-display font-semibold text-sm transition-all duration-200
                 bg-amber-400 text-ink-950 hover:bg-amber-300 active:scale-95
-                disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
-                shadow-lg shadow-amber-400/20 hover:shadow-amber-400/30"
+                disabled:opacity-40 disabled:cursor-not-allowed
+                shadow-lg shadow-amber-400/20"
             >
               {isLoading ? (
                 <>
-                  <svg
-                    className="animate-spin w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                   </svg>
                   Solving...
                 </>
               ) : (
                 <>
-                  Solve
+                  Ask AI
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path
-                      d="M2 7h10M7 2l5 5-5 5"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </>
               )}
@@ -169,19 +131,17 @@ export default function InputBox({ onSolve, isLoading }: InputBoxProps) {
 
       {/* Example questions */}
       <div className="mt-4">
-        <p className="text-xs text-slate-600 mb-2.5 uppercase tracking-wider font-display">
-          Try an example
-        </p>
+        <p className="text-xs text-slate-600 mb-2.5 uppercase tracking-wider font-display">Try an example</p>
         <div className="flex flex-wrap gap-2">
-          {EXAMPLE_QUESTIONS.slice(0, 4).map((example, i) => (
+          {EXAMPLE_QUESTIONS.slice(0, 5).map((example, i) => (
             <button
               key={i}
               onClick={() => handleExampleClick(example)}
               disabled={isLoading}
               className="text-xs px-3 py-1.5 rounded-lg bg-ink-800 border border-ink-600 text-slate-400
                 hover:border-amber-400/40 hover:text-amber-300 hover:bg-ink-700
-                transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
-                font-body truncate max-w-[200px]"
+                transition-all duration-150 disabled:opacity-40
+                font-body truncate max-w-[220px]"
             >
               {example}
             </button>
