@@ -7,10 +7,8 @@ export interface SolveResponse {
   rawText: string;
 }
 
-// Create client fresh on each call instead of at module load time
 export function createClient() {
   const apiKey = process.env.GROQ_API_KEY;
-  
   return new OpenAI({
     apiKey: apiKey || "",
     baseURL: "https://api.groq.com/openai/v1",
@@ -58,8 +56,11 @@ export function parseAIResponse(rawText: string): SolveResponse {
 
   const stepsSection = rawText.match(/STEPS:\s*([\s\S]+?)(?=FINAL ANSWER:|$)/i);
   if (stepsSection) {
-    const stepMatches = stepsSection[1].matchAll(/Step\s+(\d+):\s*([\s\S]+?)(?=Step\s+\d+:|$)/gi);
-    for (const match of stepMatches) {
+    const stepsText = stepsSection[1];
+    // Fixed: use exec loop instead of matchAll to avoid downlevelIteration issue
+    const stepRegex = /Step\s+(\d+):\s*([\s\S]+?)(?=Step\s+\d+:|$)/gi;
+    let match;
+    while ((match = stepRegex.exec(stepsText)) !== null) {
       const stepContent = match[2].trim();
       if (stepContent) steps.push(stepContent);
     }
