@@ -22,23 +22,22 @@ export function getModelName(): string {
 export function buildPrompt(question: string): string {
   return `You are an expert math tutor helping a school or early college student. Solve the following problem with clear, detailed explanations.
 
-Your response MUST follow this EXACT format with these EXACT markers:
+Your response MUST follow this EXACT format:
 
-CONCEPT: [Name the mathematical concept(s) used, e.g. "Quadratic Equations", "Pythagorean Theorem"]
+CONCEPT: [The mathematical concept used]
 
 STEPS:
-Step 1: [First step with clear explanation]
-Step 2: [Second step with clear explanation]
-Step 3: [Continue as needed...]
+Step 1: [First step]
+Step 2: [Second step]
+Step 3: [Continue as needed]
 
-FINAL ANSWER: [The complete final answer, clearly stated]
+FINAL ANSWER: [The complete final answer]
 
 Rules:
-- Use simple language suitable for students
-- Show ALL intermediate calculations
-- Explain WHY each step is done, not just what
+- Use simple language for students
+- Show ALL calculations
+- Explain WHY each step is done
 - Be encouraging and clear
-- If the question is not math-related, politely say so and ask for a math question
 
 Question: ${question}`;
 }
@@ -48,36 +47,40 @@ export function parseAIResponse(rawText: string): SolveResponse {
   let finalAnswer = "";
   let concept = "";
 
+  // Extract concept
   const conceptMatch = rawText.match(/CONCEPT:\s*(.+?)(?:\n|$)/i);
-  if (conceptMatch) concept = conceptMatch[1].trim();
+  if (conceptMatch) {
+    concept = conceptMatch[1].trim();
+  }
 
-  const answerMatch = rawText.match(/FINAL ANSWER:\s*([\s\S]+?)(?:\n\n|$)/i);
-  if (answerMatch) finalAnswer = answerMatch[1].trim();
+  // Extract final answer - find index and slice instead of regex with s flag
+  const finalAnswerIndex = rawText.search(/FINAL ANSWER:/i);
+  if (finalAnswerIndex !== -1) {
+    finalAnswer = rawText.slice(finalAnswerIndex).replace(/FINAL ANSWER:\s*/i, "").trim();
+  }
 
-  const stepsSection = rawText.match(/STEPS:\s*([\s\S]+?)(?=FINAL ANSWER:|$)/i);
-  if (stepsSection) {
-    const stepsText = stepsSection[1];
-    // Fixed: use exec loop instead of matchAll to avoid downlevelIteration issue
-    const stepRegex = /Step\s+(\d+):\s*([\s\S]+?)(?=Step\s+\d+:|$)/gi;
+  // Extract steps section
+  const stepsIndex = rawText.search(/STEPS:/i);
+  const endIndex = finalAnswerIndex !== -1 ? finalAnswerIndex : rawText.length;
+  
+  if (stepsIndex !== -1) {
+    const stepsText = rawText.slice(stepsIndex, endIndex);
+    const stepRegex = /Step\s+\d+:\s*([\s\S]+?)(?=Step\s+\d+:|$)/gi;
     let match;
     while ((match = stepRegex.exec(stepsText)) !== null) {
-      const stepContent = match[2].trim();
+      const stepContent = match[1].trim();
       if (stepContent) steps.push(stepContent);
     }
   }
 
-  if (steps.length === 0) {
-    const cleanText = rawText
-      .replace(/CONCEPT:.+?\n/i, "")
-      .replace(/FINAL ANSWER:[\s\S]+/i, "")
-      .replace(/STEPS:/i, "")
-      .trim();
-    if (cleanText) steps.push(cleanText);
+  // Fallback if no steps found
+  if (steps.length === 0 && rawText.trim()) {
+    steps.push(rawText.trim());
   }
 
   if (!finalAnswer) {
-    const sentences = rawText.split(/\.\s+/);
-    finalAnswer = sentences[sentences.length - 1]?.trim() || "See explanation above.";
+    const lines = rawText.split("\n").filter((l) => l.trim());
+    finalAnswer = lines[lines.length - 1] || "See explanation above.";
   }
 
   if (!concept) concept = "Mathematics";
