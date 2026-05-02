@@ -47,42 +47,47 @@ export function parseAIResponse(rawText: string): SolveResponse {
   let finalAnswer = "";
   let concept = "";
 
-  // Extract concept
+  // ✅ Extract concept
   const conceptMatch = rawText.match(/CONCEPT:\s*(.+?)(?:\n|$)/i);
   if (conceptMatch) {
     concept = conceptMatch[1].trim();
   }
 
-  // Extract final answer - find index and slice instead of regex with s flag
-  const finalAnswerIndex = rawText.search(/FINAL ANSWER:/i);
-  if (finalAnswerIndex !== -1) {
-    finalAnswer = rawText.slice(finalAnswerIndex).replace(/FINAL ANSWER:\s*/i, "").trim();
+  // ✅ Extract final answer (FIXED)
+  const finalAnswerMatch = rawText.match(/FINAL ANSWER:\s*([\s\S]+)/i);
+  if (finalAnswerMatch) {
+    finalAnswer = finalAnswerMatch[1].trim();
   }
 
-  // Extract steps section
+  // ✅ Extract steps
   const stepsIndex = rawText.search(/STEPS:/i);
+  const finalAnswerIndex = rawText.search(/FINAL ANSWER:/i);
   const endIndex = finalAnswerIndex !== -1 ? finalAnswerIndex : rawText.length;
-  
+
   if (stepsIndex !== -1) {
     const stepsText = rawText.slice(stepsIndex, endIndex);
+
     const stepRegex = /Step\s+\d+:\s*([\s\S]+?)(?=Step\s+\d+:|$)/gi;
     let match;
+
     while ((match = stepRegex.exec(stepsText)) !== null) {
       const stepContent = match[1].trim();
       if (stepContent) steps.push(stepContent);
     }
   }
 
-  // Fallback if no steps found
+  // ✅ Fallback if no structured steps
   if (steps.length === 0 && rawText.trim()) {
     steps.push(rawText.trim());
   }
 
+  // ✅ Fallback if no final answer
   if (!finalAnswer) {
     const lines = rawText.split("\n").filter((l) => l.trim());
     finalAnswer = lines[lines.length - 1] || "See explanation above.";
   }
 
+  // ✅ Default concept
   if (!concept) concept = "Mathematics";
 
   return { steps, finalAnswer, concept, rawText };
