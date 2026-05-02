@@ -1,0 +1,151 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink-950: #0a0a0f;
+  --ink-900: #12121a;
+  --ink-800: #1a1a26;
+  --ink-700: #242433;
+  --ink-600: #32324a;
+  --amber-400: #fbbf24;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0a0f;
+  color: #e2e8f0;
+  font-family: "DM Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12121a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #32324a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fbbf24;
+}
+
+/* Textarea resize handle */
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Grid background pattern */
+.grid-bg {
+  background-image: linear-gradient(
+      rgba(251, 191, 36, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(251, 191, 36, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Shimmer animation for loading */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #fbbf24 0%,
+    #fde68a 25%,
+    #fbbf24 50%,
+    #fde68a 75%,
+    #fbbf24 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Glow effects */
+.amber-glow {
+  box-shadow: 0 0 40px rgba(251, 191, 36, 0.08),
+    0 0 80px rgba(251, 191, 36, 0.04);
+}
+
+.amber-glow-strong {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.15),
+    0 0 40px rgba(251, 191, 36, 0.08);
+}
+
+/* Step card hover */
+.step-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.step-card:hover {
+  transform: translateX(4px);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+/* Fade up animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+  opacity: 0;
+}
+.animation-delay-200 {
+  animation-delay: 200ms;
+  opacity: 0;
+}
+.animation-delay-300 {
+  animation-delay: 300ms;
+  opacity: 0;
+}
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid rgba(251, 191, 36, 0.6);
+  outline-offset: 2px;
+}
+
+/* Mobile tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
