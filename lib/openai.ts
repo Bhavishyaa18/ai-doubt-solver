@@ -69,7 +69,7 @@ export function parseAIResponse(rawText: string): SolveResponse {
   if (steps.length === 0) {
     const cleanText = rawText
       .replace(/CONCEPT:.+?\n/i, "")
-      .replace(/FINAL ANSWER:.+/is, "")
+      .replace(/FINAL ANSWER:[\s\S]+/i, "")
       .replace(/STEPS:/i, "")
       .trim();
     if (cleanText) steps.push(cleanText);
