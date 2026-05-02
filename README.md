@@ -17,7 +17,7 @@ A clean, minimal web app that helps students solve math problems step-by-step us
 
 - **Framework**: Next.js 14 (App Router)
 - **Styling**: Tailwind CSS
-- **AI**: OpenAI API (GPT-4o mini) or Anthropic (Claude)
+- **AI**: Groq API 
 - **Language**: TypeScript
 
 ## Project Structure
@@ -40,90 +40,6 @@ ai-doubt-solver/
     └── openai.ts            # AI client + prompt + parser
 ```
 
-## Quick Start
-
-### 1. Install dependencies
-
-```bash
-npm install
-```
-
-### 2. Set up environment variables
-
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` and add your API key:
-
-**For OpenAI:**
-```
-OPENAI_API_KEY=sk-...your-key-here...
-AI_PROVIDER=openai
-```
-
-**For Anthropic (Claude):**
-```
-ANTHROPIC_API_KEY=sk-ant-...your-key-here...
-AI_PROVIDER=anthropic
-```
-
-### 3. Run development server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-## API Route
-
-### `POST /api/solve`
-
-**Request:**
-```json
-{
-  "question": "Solve: 2x² + 5x - 3 = 0"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "concept": "Quadratic Equations",
-    "steps": [
-      "Identify the equation: 2x² + 5x - 3 = 0...",
-      "Use the quadratic formula: x = (-b ± √(b²-4ac)) / 2a...",
-      "Substitute a=2, b=5, c=-3..."
-    ],
-    "finalAnswer": "x = 1/2 or x = -3",
-    "rawText": "..."
-  }
-}
-```
-
-**Error Response:**
-```json
-{
-  "error": "Question is required and must be a string."
-}
-```
-
-## Deployment on Vercel
-
-1. Push your code to GitHub
-2. Connect your repo to [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard:
-   - `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`)
-   - `AI_PROVIDER` = `openai` or `anthropic`
-4. Deploy!
-
-## Getting API Keys
-
-- **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-- **Anthropic**: [console.anthropic.com](https://console.anthropic.com)
 
 ## Supported Math Topics
 
